@@ -1,9 +1,16 @@
 
 $asm = [Reflection.Assembly]::LoadFile("$PSScriptRoot\..\lib\Crayons.dll")
 
-$p = [Crayons.Patterns.Pattern]::new(
-    "(?<magenta>'.*')"
-)
+$p = new-object -type Crayons.Patterns.Pattern
+$p.Add("(?<magenta>'.*?')", "quoted names")
+$p.Add("(?<green>info):", "info log level")
+$p.Add("(?<green>done|OK)", "done")
+$p.Add("(?<red>Error|Fail|Failed)", "done")
+$p.Add("(?<red>Error:.*)", "errors")
+
+$global:logPattern = $p
+
+[Crayons.CrayonString]::EscapeChar = '`'
 
 [Crayons.Crayon]::Configure({
     param($text, $color) 
@@ -19,6 +26,7 @@ function Log-Result ($message) {
 
 function Log-Info ($message)
 {
+    if (!($message -match "^error")) { $message = "info: " + $message }
     $message = $p.Colorize($message)
     [Crayons.Crayon]::Write($message)
     #Write-Host $message
@@ -33,9 +41,3 @@ function Log-Progress($activity, $status, $percentComplete, $id) {
     Write-Progress @PSBoundParameters 
     write-host $activity : $status
 }
-
-Log-Info "testing 'this'"
-Log-Info "testing 'that'"
-Log-progress -activity "testing this module" -status "running test 1" -percentComplete 59
-#write-progress -activity "testing this module" -status "running test 1" -percentComplete 59
-Start-Sleep -Seconds 3
