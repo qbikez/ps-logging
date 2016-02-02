@@ -2,7 +2,7 @@
 $asm = [Reflection.Assembly]::LoadFile("$PSScriptRoot\..\lib\Crayons.dll")
 
 $p = new-object -type Crayons.Patterns.Pattern
-$p.Add("(?<magenta>'.*')", "quoted names")
+$p.Add("(?<magenta>'.*?')", "quoted names")
 $p.Add("(?<green>info):", "info log level")
 $p.Add("(?<green>done|OK)", "done")
 $p.Add("(?<red>Error|Fail|Failed)", "done")
