@@ -2,8 +2,11 @@
 $asm = [Reflection.Assembly]::LoadFile("$PSScriptRoot\..\lib\Crayons.dll")
 
 $p = new-object -type Crayons.Patterns.Pattern
-$p.Add("(?<magenta>'.*')", "colorize quoted names")
-
+$p.Add("(?<magenta>'.*')", "quoted names")
+$p.Add("(?<green>info):", "info log level")
+$p.Add("(?<green>done|OK)", "done")
+$p.Add("(?<red>Error|Fail|Failed)", "done")
+$p.Add("(?<red>Error:.*)", "errors")
 
 [Crayons.CrayonString]::EscapeChar = '`'
 
@@ -21,6 +24,7 @@ function Log-Result ($message) {
 
 function Log-Info ($message)
 {
+    if (!($message -match "^error")) { $message = "info: " + $message }
     $message = $p.Colorize($message)
     [Crayons.Crayon]::Write($message)
     #Write-Host $message
