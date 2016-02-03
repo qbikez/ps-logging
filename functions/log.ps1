@@ -4,6 +4,7 @@ $asm = [Reflection.Assembly]::LoadFile("$PSScriptRoot\..\lib\Crayons.dll")
 $p = new-object -type Crayons.Patterns.Pattern
 $p.Add("(?<magenta>'.*?')", "quoted names")
 $p.Add("(?<green>info):", "info log level")
+$p.Add("(?<cyan>verbose):", "verbose log level")
 $p.Add("(?<green>done|OK)", "done")
 $p.Add("(?<red>Error|Fail|Failed)", "done")
 $p.Add("(?<red>Error:.*)", "errors")
@@ -20,6 +21,18 @@ $global:logPattern = $p
     Write-Host $text
 })
 
+$verboseBuffer = ""
+$verboseWriter = [Crayons.Crayon]::CreateWriter({
+    param($text, $color) 
+    $verboseBuffer += $text
+}, 
+{ param ($text) 
+    $verboseBuffer += $text
+    Write-host $verboseBuffer
+    $verbosebuffer = ""
+})
+
+
 function Log-Result ($message) {
     Log-Info $message
 }
@@ -32,9 +45,13 @@ function Log-Info ($message)
     #Write-Host $message
 }
 
-function Log-Verbose($message)
+function Log-Verbose($message, $verbref)
 {    
-    Write-Verbose $message
+    $VerbosePreference = $verbref
+    if (!($message -match "^error")) { $message = "verbose: " + $message }
+    $message = $p.Colorize($message)
+    #$message.WriteToConsole($verboseWriter)
+    $message.WriteToConsole()
 }
 
 function Log-Progress($activity, $status, $percentComplete, $id) {
