@@ -1,6 +1,5 @@
 ﻿$helpersPath = (Split-Path -parent $MyInvocation.MyCommand.Definition);
 
-write-host "loading module Logging from $helpersPath..."
 
 #$DebugPreference = "SilentlyContinue"
 #if ($env:ChocolateyEnvironmentDebug -eq 'true') {$DebugPreference = "Continue";}
