@@ -15,6 +15,9 @@ $p.Add(":(?<cyan>[^\s.]+)", "debug values")
 $global:logPattern = $p
 $global:logprefix = $null
 $global:lastprefix = $null
+if ($global:timepreference -eq $null) {
+    [System.Management.Automation.ActionPreference]$global:timepreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
+}
 
 [Crayons.CrayonString]::EscapeChar = '`'
 
@@ -71,6 +74,19 @@ function Log-Verbose($message, $verbref)
     $message.WriteToConsole()
 }
 
+function _log-message($message, $prefix, $condition = $null) {
+    if ($condition -ne $null) {
+        if ($condition -eq [System.Management.Automation.ActionPreference]::SilentlyContinue `
+        -or $condition -eq [System.Management.Automation.ActionPreference]::Ignore) {
+            return
+        }
+    }
+    if ($prefix -ne $null) {
+        if (!($message -match "^$prefix")) { $message = "$($prefix): " + $message }
+    }
+    $message = $p.Colorize($message)
+    $message.WriteToConsole()
+}
 function log-message($message, $prefix) {
     if ($prefix -eq $null) {
         if ($global:logprefix -ne $null) {
@@ -81,13 +97,24 @@ function log-message($message, $prefix) {
     } else {
         $global:lastprefix = $prefix
     }
-    if ($prefix -ne $null) {
-        if (!($message -match "^$prefix")) { $message = "$($prefix): " + $message }
-    }
+    
 
-   
-   $message = $p.Colorize($message)
-   $message.WriteToConsole()
+    _log-message $message $prefix  
+}
+
+function log-time {
+[cmdletbinding()]
+param(
+    [Parameter(ValueFromPipeline=$true)][scriptblock] $expression, 
+    [Alias("m")]
+    [string]$message,
+    [switch][bool] $detailed = $true
+)     
+    $pref = $global:timepreference
+    if ($VerbosePreference -ne "SilentlyContinue") { $pref = $VerbosePreference }
+    if ($detailed) { _log-message "$($message)..." -prefix "time" -condition $pref }
+    $time = measure-command -Expression $expression 
+    _log-message "$($message): '$($time.Tostring())'" -prefix "time" -condition $pref
 }
 
 function Log-Progress($activity, $status, $percentComplete, $id) {

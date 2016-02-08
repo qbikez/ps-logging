@@ -14,4 +14,4 @@ Resolve-Path $helpersPath\functions\*.ps1 |
 
 
 Export-ModuleMember -Function `
-    Log-Verbose, Log-Info, log-progress, log-warn, log-error, log-message
+    Log-Verbose, Log-Info, log-progress, log-warn, log-error, log-message, log-time
