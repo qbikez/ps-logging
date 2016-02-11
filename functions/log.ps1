@@ -41,11 +41,11 @@ $verboseWriter = [Crayons.Crayon]::CreateWriter({
 })
 
 
-function Log-Result ($message) {
+function Log-Result ([Parameter(ValueFromPipeline=$true)] $message) {
     Log-Info $message
 }
 
-function Log-Info ($message)
+function Log-Info ([Parameter(ValueFromPipeline=$true)] $message)
 {
     if (!($message -match "^info")) { $message = "info: " + $message }
     $message = $p.Colorize($message)
@@ -53,19 +53,19 @@ function Log-Info ($message)
     #Write-Host $message
 }
 
-function log-warn($message) {
+function log-warn([Parameter(ValueFromPipeline=$true)] $message) {
    if (!($message -match "^warn")) { $message = "warn: " + $message }
    $message = $p.Colorize($message)
    [Crayons.Crayon]::Write($message)
 }
 
-function log-error($message) {
+function log-error([Parameter(ValueFromPipeline=$true)] $message) {
    if (!($message -match "^err")) { $message = "err : " + $message }
    $message = $p.Colorize($message)
    [Crayons.Crayon]::Write($message)
 }
 
-function Log-Verbose($message, $verbref)
+function Log-Verbose([Parameter(ValueFromPipeline=$true)] $message, $verbref)
 {    
     $VerbosePreference = $verbref
     if (!($message -match "^verbose")) { $message = "verbose: " + $message }
@@ -74,7 +74,7 @@ function Log-Verbose($message, $verbref)
     $message.WriteToConsole()
 }
 
-function _log-message($message, $prefix, $condition = $null) {
+function _log-message([Parameter(ValueFromPipeline=$true)] $message, $prefix, $condition = $null) {
     if ($condition -ne $null) {
         if ($condition -eq [System.Management.Automation.ActionPreference]::SilentlyContinue `
         -or $condition -eq [System.Management.Automation.ActionPreference]::Ignore) {
@@ -87,7 +87,7 @@ function _log-message($message, $prefix, $condition = $null) {
     $message = $p.Colorize($message)
     $message.WriteToConsole()
 }
-function log-message($message, $prefix) {
+function log-message([Parameter(ValueFromPipeline=$true)] $message, $prefix) {
     if ($prefix -eq $null) {
         if ($global:logprefix -ne $null) {
             $prefix = $global:logprefix
