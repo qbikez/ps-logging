@@ -123,10 +123,11 @@ function Write-LogProgress($activity, $status, $percentComplete, $id) {
 }
 
 
-new-alias Log-Time WriteLogTime
-new-alias Log-Result WriteLogResult
-new-alias Log-Info WriteLogInfo
-new-alias Log-Error WriteLogError
-new-alias Log-Message WriteLogMessage
-new-alias Log-Verbose WriteLogVerbose
+new-alias Log-Time Write-LogTime
+new-alias Log-Result Write-LogResult
+new-alias Log-Info Write-LogInfo
+new-alias Log-Error Write-LogError
+new-alias Log-Message Write-LogMessage
+new-alias Log-Verbose Write-LogVerbose
 new-alias Log-Progress Write-LogProgress
+new-alias Log-Warn Write-LogWarn

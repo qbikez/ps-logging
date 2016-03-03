@@ -8,4 +8,8 @@ Describe "Logging module" {
         gmo Logging | Should Not BeNullOrEmpty
         get-command Log-Info | Should Not BeNullOrEmpty
     }
+    It "Should log" {
+        { log-info "this is info" } | Should Not Throw
+        { log-warn "this is warn" } | Should Not Throw
+    }
 }
