@@ -41,11 +41,11 @@ $verboseWriter = [Crayons.Crayon]::CreateWriter({
 })
 
 
-function Log-Result ([Parameter(ValueFromPipeline=$true)] $message) {
-    Log-Info $message
+function Write-LogResult ([Parameter(ValueFromPipeline=$true)] $message) {
+    Write-LogInfo $message
 }
 
-function Log-Info ([Parameter(ValueFromPipeline=$true)] $message)
+function Write-LogInfo ([Parameter(ValueFromPipeline=$true)] $message)
 {
     if (!($message -match "^info")) { $message = "info: " + $message }
     $message = $p.Colorize($message)
@@ -53,19 +53,19 @@ function Log-Info ([Parameter(ValueFromPipeline=$true)] $message)
     #Write-Host $message
 }
 
-function log-warn([Parameter(ValueFromPipeline=$true)] $message) {
+function Write-LogWarn([Parameter(ValueFromPipeline=$true)] $message) {
    if (!($message -match "^warn")) { $message = "warn: " + $message }
    $message = $p.Colorize($message)
    [Crayons.Crayon]::Write($message)
 }
 
-function log-error([Parameter(ValueFromPipeline=$true)] $message) {
+function Write-LogError([Parameter(ValueFromPipeline=$true)] $message) {
    if (!($message -match "^err")) { $message = "err : " + $message }
    $message = $p.Colorize($message)
    [Crayons.Crayon]::Write($message)
 }
 
-function Log-Verbose([Parameter(ValueFromPipeline=$true)] $message, $verbref)
+function Write-LogVerbose([Parameter(ValueFromPipeline=$true)] $message, $verbref)
 {    
     $VerbosePreference = $verbref
     if (!($message -match "^verbose")) { $message = "verbose: " + $message }
@@ -74,7 +74,7 @@ function Log-Verbose([Parameter(ValueFromPipeline=$true)] $message, $verbref)
     $message.WriteToConsole()
 }
 
-function _log-message([Parameter(ValueFromPipeline=$true)] $message, $prefix, $condition = $null) {
+function _Write-Logmessage([Parameter(ValueFromPipeline=$true)] $message, $prefix, $condition = $null) {
     if ($condition -ne $null) {
         if ($condition -eq [System.Management.Automation.ActionPreference]::SilentlyContinue `
         -or $condition -eq [System.Management.Automation.ActionPreference]::Ignore) {
@@ -87,7 +87,7 @@ function _log-message([Parameter(ValueFromPipeline=$true)] $message, $prefix, $c
     $message = $p.Colorize($message)
     $message.WriteToConsole()
 }
-function log-message([Parameter(ValueFromPipeline=$true)] $message, $prefix) {
+function Write-Logmessage([Parameter(ValueFromPipeline=$true)] $message, $prefix) {
     if ($prefix -eq $null) {
         if ($global:logprefix -ne $null) {
             $prefix = $global:logprefix
@@ -99,10 +99,10 @@ function log-message([Parameter(ValueFromPipeline=$true)] $message, $prefix) {
     }
     
 
-    _log-message $message $prefix  
+    _Write-Logmessage $message $prefix  
 }
 
-function log-time {
+function Write-LogTime {
 [cmdletbinding()]
 param(
     [Parameter(ValueFromPipeline=$true)][scriptblock] $expression, 
@@ -112,12 +112,21 @@ param(
 )     
     $pref = $global:timepreference
     if ($VerbosePreference -ne "SilentlyContinue") { $pref = $VerbosePreference }
-    if ($detailed) { _log-message "$($message)..." -prefix "time" -condition $pref }
+    if ($detailed) { _Write-Logmessage "$($message)..." -prefix "time" -condition $pref }
     $time = measure-command -Expression $expression 
-    _log-message "$($message): '$($time.Tostring())'" -prefix "time" -condition $pref
+    _Write-Logmessage "$($message): '$($time.Tostring())'" -prefix "time" -condition $pref
 }
 
-function Log-Progress($activity, $status, $percentComplete, $id) {
+function Write-LogProgress($activity, $status, $percentComplete, $id) {
     Write-Progress @PSBoundParameters 
     write-host $activity : $status
 }
+
+
+new-alias Log-Time WriteLogTime
+new-alias Log-Result WriteLogResult
+new-alias Log-Info WriteLogInfo
+new-alias Log-Error WriteLogError
+new-alias Log-Message WriteLogMessage
+new-alias Log-Verbose WriteLogVerbose
+new-alias Log-Progress Write-LogProgress
