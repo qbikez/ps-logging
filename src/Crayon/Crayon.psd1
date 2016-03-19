@@ -27,7 +27,7 @@ CompanyName = 'Unknown'
 Copyright = '(c) 2016 jakub.pawlowski. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'powershell utilities for logging to console'
+Description = "Powershell utilities for colorful logging to console. Inspired by node's chalk."
 
 # Minimum version of the Windows PowerShell engine required by this module
 # PowerShellVersion = ''
@@ -98,7 +98,7 @@ PrivateData = @{
         # LicenseUri = ''
 
         # A URL to the main website for this project.
-        # ProjectUri = ''
+        ProjectUri = 'http://github.com/qbikez/ps-logging'
 
         # A URL to an icon representing this module.
         # IconUri = ''
