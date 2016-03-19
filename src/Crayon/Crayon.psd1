@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = 'Chalk.psm1'
+RootModule = 'Crayon.psm1'
 
 # Version number of this module.
 ModuleVersion = '1.0.5'

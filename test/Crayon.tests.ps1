@@ -1,11 +1,11 @@
 . "$PSScriptRoot\includes.ps1"
 
 import-module Pester
-import-module Logging
+import-module crayon
 
-Describe "Logging module" {
+Describe "crayon module" {
     It "Should be imported" {
-        gmo Logging | Should Not BeNullOrEmpty
+        gmo crayon | Should Not BeNullOrEmpty
         get-command Log-Info | Should Not BeNullOrEmpty
     }
     It "Should log" {
