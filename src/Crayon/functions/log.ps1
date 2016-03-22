@@ -1,5 +1,5 @@
 
-$asm = [Reflection.Assembly]::LoadFile("$PSScriptRoot\..\lib\Crayons.dll")
+#$asm = [Reflection.Assembly]::LoadFile("$PSScriptRoot\..\lib\Crayons.dll")
 
 $p = new-object -type Crayons.Patterns.Pattern
 $p.Add("'(?<magenta>.*?)'", "quoted names")
