@@ -123,6 +123,80 @@ function Write-LogProgress($activity, $status, $percentComplete, $id) {
 }
 
 
+function get-ElapsedTime([switch][bool]$reset) {
+	if ($script:startTs -eq $null -or $reset) { 
+		$script:startTs = [DateTimeOffset]::Now 
+		$script:lastActivity = $null
+		$script:lasttimestamp = $null
+	}
+    $now = [DateTimeOffset]::Now
+    $elapsed = ($now - $script:startTs)   
+    return $elapsed
+}
+
+function get-loopTime() {
+    $e = get-elapsedtime
+    if ($script:lasttimestamp -eq $null) { $script:lasttimestamp = $script:startTs }
+    $now = [DateTimeOffset]::Now
+
+    $elapsed = ($now - $script:lasttimestamp)   
+
+    $script:lasttimestamp = $now
+
+    return $elapsed
+}
+
+function get-ETA($percentComplete) {
+    $elapsed = (get-elapsedtime).TotalMilliseconds
+    if ($percentComplete -eq 0) { return [timespan]::MaxValue }
+    $rate = $percentComplete / $elapsed
+    $percleft = 100 - $percentComplete
+    $msLeft = $percleft / $rate
+    return [Timespan]::FromMilliseconds($msLeft)
+}
+
+function Write-ProgressReport($activity, $status, $collection, [switch][bool]$writeToHost, [switch][bool]$complete) {
+    if ($script:lastActivity -ne $activity) {
+        $script:activitystart = [DateTimeOffset]::Now
+        $script:loopC = 0
+    }
+    $script:lastActivity = $activity
+    $script:loopC++
+    $c = $script:loopC
+    if ($collection -ne $null) {
+        $perc = ($c/[float]$collection.count * 100)
+        $eta = get-eta $perc
+    } else {
+        $perc = 0
+        $eta = $null
+    }
+    if ($status -eq $null) { $status = "..." }
+    $looptime = get-looptime 
+    $a = @{
+        Activity = "$activity $c/$($collection.count) Elapsed=$(get-elapsedtime) ETA=$eta Cur Speed=$(1/$($looptime.totalSeconds))/s AVG Speed=$($c/([DateTimeOffset]::Now - $script:activitystart).totalSeconds)/s"
+        Status = $status     
+    }
+    if ($complete) {
+     $a += @{ Complete = $true }
+    } else {
+       $a += @{ PercentComplete = $perc }
+    }
+    write-progress @a
+
+
+    if ($writeToHost) {
+        $msg = "$activity : $status"
+        if ($complete) {
+         $msg += " DONE"
+        } else {
+         $msg += "($($perc)%)"
+        }
+        write-host $msg
+    }
+    
+}
+
+
 new-alias Log-Time Write-LogTime
 new-alias Log-Result Write-LogResult
 new-alias Log-Info Write-LogInfo
@@ -131,3 +205,4 @@ new-alias Log-Message Write-LogMessage
 new-alias Log-Verbose Write-LogVerbose
 new-alias Log-Progress Write-LogProgress
 new-alias Log-Warn Write-LogWarn
+new-alias Report-Progress Write-ProgressReport

@@ -2,6 +2,8 @@
 #$helpersPath = (Split-Path -parent $MyInvocation.MyCommand.Definition);
 $helpersPath = $PSScriptRoot
 
+$script:startTs = $null
+
 #$DebugPreference = "SilentlyContinue"
 #if ($env:ChocolateyEnvironmentDebug -eq 'true') {$DebugPreference = "Continue";}
 
@@ -20,7 +22,8 @@ $t = measure-command {
  $t = measure-command {
 
 Export-ModuleMember -Function `
-    Write-LogVerbose, Write-LogInfo, Write-Logprogress, Write-Logwarn, Write-Logerror, Write-Logmessage, Write-Logtime `
+    Write-LogVerbose, Write-LogInfo, Write-Logprogress, Write-Logwarn, Write-Logerror, Write-Logmessage, Write-Logtime, `
+    Write-ProgressReport, Get-ElapsedTime, Get-ETA `
     -Alias *
  }
  #write-host "[Crayon:export] $t"
