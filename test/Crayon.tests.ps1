@@ -12,4 +12,12 @@ Describe "crayon module" {
         { log-info "this is info" } | Should Not Throw
         { log-warn "this is warn" } | Should Not Throw
     }
+
+    It "WithLogRedirect Should redirect log" {
+        WithLogRedirect {
+            $message = "this is info"
+            $o = log-info $message
+            $o | Should be "info: $message"
+        } 
+    }
 }

@@ -4,8 +4,10 @@
         {
             "name": "PowerShell",
             "type": "PowerShell",
-            "program": "test.ps1",
-            "args": "-Verbose"
+            "request": "launch",
+            "program": "${file}",
+            "args": [],
+            "cwd": "${file}"
         }
     ]
 }
