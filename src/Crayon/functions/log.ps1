@@ -15,6 +15,7 @@ $p.Add(":(?<cyan>[^\s.\\][^\s.]+)", "debug values")
 $global:logPattern = $p
 $global:logprefix = $null
 $global:lastprefix = $null
+$global:logtooutput = $false
 if ($global:timepreference -eq $null) {
     [System.Management.Automation.ActionPreference]$global:timepreference = [System.Management.Automation.ActionPreference]::SilentlyContinue
 }
@@ -40,6 +41,23 @@ $verboseWriter = [Crayons.Crayon]::CreateWriter({
     $verbosebuffer = ""
 })
 
+function _crayonwrite($message) {
+   $cmessage = $p.Colorize($message)
+   [Crayons.Crayon]::Write($cmessage)
+   if ($logtooutput) { write-output $message } 
+}
+
+function WithLogRedirect {
+    param([ScriptBlock] $scriptblock) 
+
+    $old = $global:logtooutput 
+    try {        
+        $global:logtooutput = $true
+        Invoke-Command $scriptblock
+    } finally {
+        $global:logtooutput = $old
+    }
+}
 
 function Write-LogResult ([Parameter(ValueFromPipeline=$true)] $message) {
     Write-LogInfo $message
@@ -48,30 +66,27 @@ function Write-LogResult ([Parameter(ValueFromPipeline=$true)] $message) {
 function Write-LogInfo ([Parameter(ValueFromPipeline=$true)] $message)
 {
     if (!($message -match "^info")) { $message = "info: " + $message }
-    $message = $p.Colorize($message)
-    [Crayons.Crayon]::Write($message)
-    #Write-Host $message
+    _crayonwrite($message)
 }
 
 function Write-LogWarn([Parameter(ValueFromPipeline=$true)] $message) {
    if (!($message -match "^warn")) { $message = "warn: " + $message }
-   $message = $p.Colorize($message)
-   [Crayons.Crayon]::Write($message)
+   _crayonwrite($message)
 }
 
 function Write-LogError([Parameter(ValueFromPipeline=$true)] $message) {
    if (!($message -match "^err")) { $message = "err : " + $message }
-   $message = $p.Colorize($message)
-   [Crayons.Crayon]::Write($message)
+   _crayonwrite($message)
 }
 
 function Write-LogVerbose([Parameter(ValueFromPipeline=$true)] $message, $verbref)
 {    
     $VerbosePreference = $verbref
     if (!($message -match "^verbose")) { $message = "verbose: " + $message }
-    $message = $p.Colorize($message)
+    #$message = $p.Colorize($message)
     #$message.WriteToConsole($verboseWriter)
-    $message.WriteToConsole()
+    #$message.WriteToConsole()
+    _crayonwrite($message)
 }
 
 function _Write-Logmessage([Parameter(ValueFromPipeline=$true)] $message, $prefix, $condition = $null) {
@@ -84,9 +99,11 @@ function _Write-Logmessage([Parameter(ValueFromPipeline=$true)] $message, $prefi
     if ($prefix -ne $null) {
         if (!($message -match "^$prefix")) { $message = "$($prefix): " + $message }
     }
-    $message = $p.Colorize($message)
-    $message.WriteToConsole()
+    #$message = $p.Colorize($message)
+    #$message.WriteToConsole()
+    _crayonwrite($message)
 }
+
 function Write-Logmessage([Parameter(ValueFromPipeline=$true)] $message, $prefix) {
     if ($prefix -eq $null) {
         if ($global:logprefix -ne $null) {

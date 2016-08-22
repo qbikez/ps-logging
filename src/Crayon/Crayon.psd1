@@ -12,7 +12,7 @@
 RootModule = 'Crayon.psm1'
 
 # Version number of this module.
-ModuleVersion = '1.0.9'
+ModuleVersion = '1.0.10'
 
 # ID used to uniquely identify this module
 GUID = 'e9d26e6a-36ac-495c-a3c0-21b292662d0e'

@@ -23,7 +23,7 @@ $t = measure-command {
 
 Export-ModuleMember -Function `
     Write-LogVerbose, Write-LogInfo, Write-Logprogress, Write-Logwarn, Write-Logerror, Write-Logmessage, Write-Logtime, `
-    Write-ProgressReport, Get-ElapsedTime, Get-ETA `
+    Write-ProgressReport, Get-ElapsedTime, Get-ETA, WithLogRedirect `
     -Alias *
  }
  #write-host "[Crayon:export] $t"
